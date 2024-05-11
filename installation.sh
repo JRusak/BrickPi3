@@ -1,9 +1,9 @@
 #! /bin/bash
 
-PIHOME=/home/pi
+HOME="/home/$(whoami)"
 DEXTER=Dexter
-DEXTER_PATH=$PIHOME/$DEXTER
-RASPBIAN=$PIHOME/di_update/Raspbian_For_Robots
+DEXTER_PATH=$HOME/$DEXTER
+RASPBIAN=$HOME/di_update/Raspbian_For_Robots
 BRICKPI3_DIR=$DEXTER_PATH/BrickPi3
 DEXTERSCRIPT=$DEXTER_PATH/lib/Dexter/script_tools
 
@@ -162,11 +162,11 @@ install_rfrtools_repo() {
 
   # if rfrtools is not bypassed then install it
   if [[ $install_rfrtools = "true" ]]; then
-    curl --silent -kL https://raw.githubusercontent.com/DexterInd/RFR_Tools/$selectedbranch/scripts/install_tools.sh > $PIHOME/.tmp_rfrtools.sh
+    curl --silent -kL https://raw.githubusercontent.com/DexterInd/RFR_Tools/$selectedbranch/scripts/install_tools.sh > $HOME/.tmp_rfrtools.sh
     echo "Installing RFR_Tools. This might take a moment.."
-    bash $PIHOME/.tmp_rfrtools.sh ${rfrtools_options[@]} # > /dev/null
+    bash $HOME/.tmp_rfrtools.sh ${rfrtools_options[@]} # > /dev/null
     ret_val=$?
-    rm $PIHOME/.tmp_rfrtools.sh
+    rm $HOME/.tmp_rfrtools.sh
     if [[ $ret_val -ne 0 ]]; then
       echo "RFR_Tools failed installing with exit code $ret_val. Exiting."
       exit 7
@@ -221,7 +221,7 @@ install_python_packages() {
 remove_python_packages() {
   # the 1st and only argument
   # takes the name of the package that needs to removed
-  rm -f $PIHOME/.pypaths
+  rm -f $HOME/.pypaths
 
   # get absolute path to python package
   # saves output to file because we want to have the syntax highlight working
@@ -229,17 +229,17 @@ remove_python_packages() {
   # later on the strings used with the python command can be put in just one string that gets used repeatedly
   python -c "import pkgutil; import os; \
               eggs_loader = pkgutil.find_loader('$1'); found = eggs_loader is not None; \
-              output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$1'))) if found else ''; print(output);" >> $PIHOME/.pypaths
+              output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$1'))) if found else ''; print(output);" >> $HOME/.pypaths
   sudo python -c "import pkgutil; import os; \
               eggs_loader = pkgutil.find_loader('$1'); found = eggs_loader is not None; \
-              output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$1'))) if found else ''; print(output);" >> $PIHOME/.pypaths
+              output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$1'))) if found else ''; print(output);" >> $HOME/.pypaths
   if [[ $usepython3exec = "true" ]]; then
     python3 -c "import pkgutil; import os; \
                 eggs_loader = pkgutil.find_loader('$1'); found = eggs_loader is not None; \
-                output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$1'))) if found else ''; print(output);" >> $PIHOME/.pypaths
+                output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$1'))) if found else ''; print(output);" >> $HOME/.pypaths
     sudo python3 -c "import pkgutil; import os; \
                 eggs_loader = pkgutil.find_loader('$1'); found = eggs_loader is not None; \
-                output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$1'))) if found else ''; print(output);" >> $PIHOME/.pypaths
+                output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$1'))) if found else ''; print(output);" >> $HOME/.pypaths
   fi
 
   # removing eggs for $1 python package
@@ -251,7 +251,7 @@ remove_python_packages() {
       echo "Removing ${path} egg"
       sudo rm -f "${path}"
     fi
-  done < $PIHOME/.pypaths
+  done < $HOME/.pypaths
 }
 
 install_python_pkgs_and_dependencies() {
